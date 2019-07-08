@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />     
+    </head>
+    <body>
+        <ui:composition template="./../template/main.xhtml">
+        	<ui:define name="content">
+            	<h:outputScript name="controller/subfamilyController.js" library="js" />
+            	<div ng-app="app" ng-controller="subfamilyController" id="subfamilyController">
+                	<script type="text/javascript">
+                	 	var page="newSubFamilyProduct";
+                     	function list(element){
+                    	 	var nueva_pagina;
+		               		if(element!=undefined) {
+		               			nueva_pagina=$(element).attr('data-id');
+		               			angular.element("#subfamilyController").scope().setPagina('filters',nueva_pagina);
+		               			angular.element('#subfamilyController').scope().list();
+		               		}
+                     	}
+                	</script>
+                	<div class="panel panel-default">
+                		<div class='panel-body'>
+                			<div style="margin-bottom:5px">
+                				<a class="btn btn-primary btn-xs" ng-click="prepareNew()" href="#modal-form" data-toggle="modal"><i class="fa fa-file-o"></i> <h:outputText value=" #{msg['Nuevo']}" /></a> 
+                				<span class="title"><h:outputText value="#{msg['Lista_de_Sub_Familias']}" /></span>
+                			</div>
+                			
+                			<div class="row table-filters">
+									<div class="col-md-4">
+										<input type="text" ng-model="objects.filters.filtro" placeholder="#{msg['Buscar']} ..." class="form-control" />
+									</div>
+									<div class="col-md-2">
+										<button class="btn btn-info btn-xs" ng-click="objects.filters.pagina=1;list($event)"><i class="fa fa-search"></i> <h:outputText value=" #{msg['Buscar']}" /></button>
+									</div>
+							</div>
+                 		
+							<table id="table-products" class='table table-bordered table-hover listTable'>
+				 				<thead class="tableCabecera">
+									<tr>
+									<th><h:outputText value="#{msg['nombre']}" /></th>
+									<th><h:outputText value="#{msg['Descripcion']}" /></th>
+									<th style="width: 180px !important;"><h:outputText value="#{msg['Acciones']}" /></th></tr>
+				 				</thead>
+				 				<tbody>
+									<tr ng-repeat="item in objects.list | orderBy:'-id'">
+										<td >{{item.name}}</td>
+										<td>{{item.description}}</td>
+										<td  class='centered'>
+											<button ng-click="select(item)" class="btn btn-info btn-xs" data-toggle="modal" data-target="#modal-form" title="#{msg['Editar']}" >
+												<i class="fa fa-edit"></i>
+											</button>
+											<button ng-click="select(item)" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#modal-delete" title="#{msg['Eliminar']}" >
+												<i class="fa fa-trash-o"></i>
+											</button>
+											
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<div id="paginador_Table"></div>
+						</div>
+                	</div>
+                	
+                	<!-- Modal nuevo/editar-->
+        			<div id="modal-form" class="modal fade modal-form" tabindex="-1" role="dialog" >
+					 	<div class="modal-dialog modal-sm" role="document">
+					 		<div class="modal-content">
+							 	<form name="form" role="form">
+							 		<div class="modal-header">
+										<button class="close" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+										</button>
+										<h4 class="modal-title"> <h:outputText value="#{msg['Sub_Familia']}" /> </h4>
+									</div>      						      
+							 		<div  class="modal-body">
+							 		<div class="row">
+							 			<div class="col-md-12">
+							 				<div class="form-group">
+					                    		<label><h:outputText value="#{msg['Familia']}" /></label>
+					                    		<select class="sel2 form-control" id="family-select" ng-model="object.parentid" >
+							                    		<option ng-repeat="item in families" value="{{ item.id }}">{{ item.name }}</option>
+							                    </select>
+					                    		
+					                    	</div>
+							 			</div>
+							 			<div class="col-md-12">
+							 				<div class="form-group">
+					                    		<label><h:outputText value="#{msg['nombre']}" /></label>
+					                    		<input class="form-control"  ng-model="object.name" required='required' />
+					                    	</div>
+							 			</div>
+							 			<div class="col-md-12">
+							 				<div class="form-group">
+					                    		<label><h:outputText value="#{msg['Descripcion']}" /></label>
+					                    		<textarea class="form-control" ng-model="object.description"></textarea>
+					                    	</div>
+							 			</div>
+							 		</div>
+							 			
+				                    	
+				                    	
+							 			
+							    	</div>           
+								    <div class="modal-footer">
+								        <a ng-click="save($event)"  ng-disabled="form.$invalid" class="btn btn-primary btn-xs"><i class="fa fa-save"></i> <h:outputText value="#{msg['Guardar']}" /></a>
+								        <a class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-close"></i> <h:outputText value="#{msg['Cancelar']}" /></a>               
+								    </div>
+						     	</form>
+       						</div>          
+						</div>
+					</div>
+					<!-- Fin del modal facturacion -->
+					
+                   	<!-- Modal Eliminar -->
+					<div id="modal-delete" class="modal fade" tabindex="-1" data-backdrop="static">
+	    				<div class="modal-dialog modal-sm">
+	    					<div class="modal-content">
+	    						<div class="modal-header">
+	    							<button type="button" class="close" data-dismiss="modal">
+										<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+									</button>
+									<div style="text-align: center;">  <h:outputText value="#{msg['Eliminar']}" /> </div>
+	    						</div>
+	    						<div class="modal-body">
+	    							<div class="row">
+	    								<div class="col-lg-12">
+		    								<div class="alert alert-danger">
+											  <h:outputText value="#{msg['Desea_eliminar']}" />?
+											</div>
+		    							</div>
+	    							</div>
+	    						</div>
+	    						<div class="modal-footer">
+	    							<center>
+	    								<button class="btn btn-success btn-xs" ng-click="remove($event)" data-dismiss="modal"><i class="fa fa-minus-circle"></i> <h:outputText value="#{msg['Eliminar']}" /></button>
+	    								<button class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-close"></i> <h:outputText value="#{msg['Cerrar']}" /></button>
+	    							</center>
+	    						</div>
+	    					</div>
+	    				</div>
+	    			</div>
+	    			<!-- Fin Modal Eliminar -->	
+	    	
+	    		</div>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>
